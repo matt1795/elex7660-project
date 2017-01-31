@@ -1,0 +1,44 @@
+\subsection*{Main Objective}
+
+The main objective of this project is to generate a black and white composite
+video signal that will drive a Cathode Ray Tube (CRT) television. The composite
+
+\subsection*{Secondary Objectives}
+
+\subsubsection*{Framerate Control}
+
+The framerate for a CRT is roughly 30Hz while the shutter rate for most video
+cameras is 24Hz. When filming a CRT screen, slightly more than one frame will be
+displayed in the time that the image is captured on the camera, this results in
+a sweeping, white bar that will appear on the television when viewing the film.
+This is undesireable.
+
+Many prosumer and professional cameras have an output signal called HSYNC. This
+signal will be used to trigger the composite video encoder so that only one
+frame is written to the television during one shutter period. In theory this
+will remove any erronous artifacts that would normally be seen in the video.
+
+\subsubsection*{Sound Synthesizer}
+
+Adding to the SPI interface, we could add commands that trigger pre-generated
+sound "bites" which would play in conjunction with pong. These sounds could
+either be programmed to the encoder through SPI, and saved into RAM or hardcoded
+into ROM. A DAC would then be needed to drive a speaker. Sound information and
+playing would be modeled after some standard, possibly something like WAV.
+
+\subsubsection*{Open MSP430 Synthesis}
+
+On Opencores.com an open source IP of the MSP430 core can be downloaded for
+synthesis in an FGPA. To cut back on the hardware used in the project, we can
+put this core on our FPGA and program pong onto it. This also adds some
+complexity as the ADC on the evaluation board would need to be interfaced to the
+system.
+
+\subsubsection*{Colour}
+
+The colour component of a composite signal is transmitted through the phase and
+angle modulation of a 3.58MHz carrier. In order to generate this signal we would
+need to employ a parallel DAC instead of our cheap, lopsided, but inexpensive
+resistor divider DAC. Additionally we would need to come up with some sort of
+simplified colour encoding, perhaps keeping the number of colours to 8 -- at
+most 256.
