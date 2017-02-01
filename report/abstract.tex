@@ -1,2 +1,29 @@
 \section*{Abstract}
 
+The main objective of this project is to generate a black and white composite
+video signal that will drive a Cathode Ray Tube (CRT) television. To accomplish
+this, we will use hardware to create a basic video card for a CRT TV. We will be
+able to achieve a resolution of 240 x 320 pixels on the screen.
+
+The major components of this design include a digital interface for a processor,
+we will first use SPI, as it is simple to implement and will make the use of
+this device comparable to the Nokia 5110 LCD screen. Secondly, a storage buffer
+will need to be implemented that can handle different rates of data being
+written to and read from it. Lastly, there will be an encoder module which
+parses the storage buffer and generates the composite video via DAC.
+
+We currently have a black and white CRT television that will allow us to
+accomplish most of our goals. We will need to find a colour television if we get
+to the point of adding colour capability to the video card. For driving
+electronics, we also already have what we need in order to implement a simple,
+lopsided resistor DAC that will generate the correct voltage levels for
+composite video. Once we start adding shading, we will have to incorporate a
+higher quality DAC. At first glance, we need this DAC to have a parallel input
+to achieve fast conversion rates, and either 8 or 12 bit precision. 
+
+Out project goals are in order as follows. Controlling the CRT TV to display an
+alternating black and white signal. Increasing the depth of the black and white
+inputs to be able to display shades. Connecting a MSP430 through a SPI input and
+displaying the preprogrammed pong game on the CRT TV. Introducing color to our
+black and white CRT TV by using phase modulation superimposed on the analog
+input. Finally, we would add sound to our composite video card.
