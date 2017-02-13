@@ -6,7 +6,7 @@ this, we will develop a video card with a serial interface that can generate a
 composite video signal. We will be able to achieve a resolution of 240 x 320
 pixels on the screen.
 
-\begin{figure}
+\begin{figure}[H]
    \centering
    \caption{System Overview}
 \end{figure}
@@ -47,6 +47,6 @@ system.
 The colour component of a composite signal is transmitted through the phase and
 angle modulation of a 3.58MHz carrier. In order to generate this signal we would
 need to employ a parallel DAC instead of our cheap, lopsided, but inexpensive
-resistor divider DAC. Additionally we would need to come up with some sort of
-simplified colour encoding, perhaps keeping the number of colours to 8 -- at
-most 256.
+resistor divider DAC. Another project within our class is to create a Ninstendo
+Entertainment System on an FPGA, and so we will base our colour output on the
+NES.
