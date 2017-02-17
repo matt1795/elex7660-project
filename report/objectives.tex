@@ -6,11 +6,6 @@ this, we will develop a video card with a serial interface that can generate a
 composite video signal. We will be able to achieve a resolution of 240 x 320
 pixels on the screen.
 
-\begin{figure}[H]
-   \centering
-   \caption{System Overview}
-\end{figure}
-
 \subsection*{Secondary Objectives}
 
 \subsubsection*{Framerate Control}
@@ -51,10 +46,13 @@ resistor divider DAC. Another project within our class is to create a Ninstendo
 Entertainment System on an FPGA, and so we will base our colour output on the
 NES.
 
-\subsubsection*{Hardware}
 
-To be able to complete this project we will need more hardware that what we 
+\subsection*{Hardware}
+
+To be able to complete this project we will need more hardware than what we 
 currently have. We have a MSP430 microcontroller, the FPGA board, and a mini
-black and white TV. We will need to use the 50 dollar funding from BCIT to order
-(Matt I dont remeber what you said we needed). If our project is successful we 
-will need to find a colour television (Most likly find for free somewhere).
+black and white TV. We need an 8-bit parallel, single channel DAC. We will use
+the AD9748 from Analog Devices Inc. which can be ordered from Digikey, and we
+will also need a breakout board for the 32-QFN package which can also be picked
+up from Digikey. Any hardware we may need, such as parts for filtering will be
+provided by us.
