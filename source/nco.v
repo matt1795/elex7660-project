@@ -4,7 +4,8 @@
 // Date: 2017-02-21
 
 module nco(   
-    input [(N-1):0] fcw, clk,
+    input clk, reset, 
+    input [(N-1):0] fcw,
     output [(M-1):0] out
 );
     // N is the width of the frequency control word and 
@@ -18,8 +19,12 @@ module nco(
 
     always @(*)
 	count_next = count + fcw;
-    
+	
     always @(posedge clk)
-	count <= count_next;
+	if (reset) begin
+	    count <= 1'b0;
+	end else begin
+	    count <= count_next;
+	end
 
 endmodule

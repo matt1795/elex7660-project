@@ -6,13 +6,25 @@
 module nco_tb();
     
     reg clk;
-    reg [15:0] fcw;
-    wire [7:0] out;
+    reg reset = 0;
+    reg [15:0] fcw = 16'd4692;
+    wire [7:0] phase, out;
+    
+    nco testGuy(.reset(reset), .clk(clk), .fcw(fcw), .out(phase));
+    lutsine testguy2(.clk(clk), .phase(phase), .amp(out));
 
-    always @(*)
-	#1 clk = ~clk;
+    // Generate clock
+    always 
+	#10 clk = ~clk;
 
-    always @(posedge clk) begin
-
+    initial begin
+	$dumpfile("nco.vcd");
+	$dumpvars(0, clk, reset, fcw, phase, out);
+	clk = 0;
+	#1 reset = 1;
+	#20 reset = 0;
+	
+	#2000 $finish;
+    end
     
 endmodule
