@@ -1,0 +1,6 @@
+../source/commands.v
+../source/dacmux.v
+../source/lutsine.v
+../source/nco.v
+../source/spi_comp_top.v
+../source/stateControl.v
