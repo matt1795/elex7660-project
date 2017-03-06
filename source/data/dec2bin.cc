@@ -18,7 +18,7 @@ using namespace std;
 
 // Function for converting an integer into its binary representation in the form
 // of a string
-char *dec2bin(int val, int bits, bool twoComp);
+void dec2bin(int val, char* strBuf, int bits);
 
 int main(int argc, char *argv[])
 { 
@@ -62,13 +62,20 @@ int main(int argc, char *argv[])
     in.open(inputFile);
     out.open(outputFile);
     
-    char* val;
+    char decBuf[80];
+    char binBuf[80];
+
     cout << "Starting Transfer" << endl;
 
     // Convert Values
-    
-    out << dec2bin() << endl;
-    
+    while (!in.eof())
+    {
+	in >> decBuf;	
+	int val = strtol(decBuf, NULL, 10);
+	dec2bin(val, binBuf, width);
+	out << binBuf << endl;
+    }
+
     cout << "Closing Files" << endl;
 
     // Close files
@@ -78,11 +85,16 @@ int main(int argc, char *argv[])
 
 // Function for converting an integer into its binary representation in the form
 // of a string
-char *dec2bin(int val, int bits, bool twoComp)
+void dec2bin(int val, char* strBuf, int bits)
 {
-    char string[bits+1];
-
-    if (twoComp)
-
-    return string;
+    // Set up string
+    *(strBuf + bits) = '\0';
+    
+    for (int i = bits-1; i >= 0; i--)
+    {
+	if (val & (1 << (bits-i-1)))
+	    *(strBuf + i) = '1';
+	else
+	    *(strBuf + i) = '0';
+    }
 }
