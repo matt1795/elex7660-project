@@ -3,8 +3,8 @@
 // Author: Matthew Knight
 // Date: 2017-02-24
 
-`include "lut.v"
-`include "delay.v"
+`include "../source/lut.v"
+`include "../source/delay.v"
 
 module synthesizer(
     input clk, reset,
@@ -34,6 +34,6 @@ module synthesizer(
     delay d_2(.clk(clk), .reset(reset), .D(amp), .Q(amp1));
 
     // Put the components together 
-    assign video = ((amp*sine) >> 7) + offset1;
+    assign video = ((amp1*sine) >> 7) + offset1;
 
 endmodule
