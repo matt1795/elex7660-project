@@ -13,7 +13,10 @@ module synthesizer(
     output [7:0] video
 );
     
-    wire [7:0] offset, offset1, phase, phase1, phaOff, amp, amp1, sine;
+    wire [7:0] offset, offset1, phase, phase1, phaOff;
+    wire signed [7:0] sine, amp, amp1;
+    wire signed [15:0] ireg;
+    wire [7:0] ireg2;
 
     // Look-up Tables/ROM
     lut #(64, 8, "../source/data/phase.data")
@@ -34,6 +37,9 @@ module synthesizer(
     delay d_2(.clk(clk), .reset(reset), .D(amp), .Q(amp1));
 
     // Put the components together 
-    assign video = ((amp1*sine) >> 7) + offset1;
+    assign ireg2 = ireg >> 7;
+    assign ireg = amp1*sine;
+    
+    assign video = ireg2 + offset1;
 
 endmodule
