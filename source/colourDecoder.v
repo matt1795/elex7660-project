@@ -7,12 +7,12 @@
 // colours), a clk, and asynchronous reset, and outputs video data to be sent to
 // the DAC for the colour burst or active video.
 
-`include "nco.v"
-`include "synthesizer.v"
+`include "../source/nco.v"
+`include "../source/synthesizer.v"
 
 module colourDecoder(
     input clk, reset,
-    input [7:0] colourNum,
+    input [5:0] colourNum,
     output [7:0] video
 );
 
