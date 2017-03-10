@@ -22,8 +22,8 @@ module nco
     always @(*)
 	count_next = count + fcw;
 	
-    always @(posedge clk)
-	if (reset) begin
+    always @(posedge clk or posedge reset)
+	if ( reset) begin
 	    count <= 1'b0;
 	end else begin
 	    count <= count_next;
