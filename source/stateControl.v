@@ -6,36 +6,56 @@
 // This module keeps track of which state the composite synthesizer is in from
 // timers.
 
+`include "../source/colourDecoder.v"
+
 module stateControl(
     input clk, reset,
-    output reg [2:0] state
+    output reg [7:0] dac
 );
 
-    parameter Hsync = 3'd0;
-    parameter porch = 3'd1;
-    parameter colourBurst = 3'd2;
-    parameter activeVideo = 3'd3;
+    parameter Hsync = 8'd0;
+    parameter blank = 8'd57;
     
+    wire [7:0] video;
+    reg colourReset;
+    reg [5:0] colourNum;
+    reg [9:0] pixel, line;
     reg [11:0] count;
+     
+
+    colourDecoder c_0(.clk(clk), .reset(reset | colourReset),
+	.colourNum(colourNum), .video(video));
 
     always @(*) begin
-	if (count < 75)
-	    state = porch;
-	else if (count < 310)
-	    state = Hsync;
-	else if (count < 340)
-	    state = porch;
-	else if (count < 465)
-	    state = colourBurst;
-	else if (count < 545)
-	    state = porch;
+
+	// The timings for a single line
+	if (count < 75) begin
+	    dac = blank;
+	    colourReset = 'b1;
+	end
+	else if (count < 12'd310)
+	    dac = Hsync;
+	else if (count < 12'd337)
+	    dac = blank;
+	else if (count < 12'd340) begin
+	    colourNum = 6'h3F;
+	    colourReset = 1'b0;
+	end
+	else if (count < 12'd465) begin
+	    dac = video;
+	    colourReset = 'b0;
+	end
+	else if (count < 12'd545)
+	    dac = blank;
 	else
-	    state = activeVideo;
+	    dac = 8'hFF;
     end
 
     always @(posedge clk) begin
-	if (reset)
+	if (reset) begin
 	    count <= 1'b0;
+	    colourReset = 'b0;
+	end
 	else if (count >= 12'd3175)
 	    count <= 1'b0;
 	else
