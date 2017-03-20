@@ -1,15 +1,21 @@
-// This Module Takes input SPI Signal and stores the data on temporary buffer
-// Called Buffer. It will then send the data to the RAM.
+// This Module Takes 8 bit input from SPI Signal and stores the data on temporary buffer
+// Called Buffer. It will then send 16 bit data to the RAM.
 // By William Harkness and Mathew Knight
 
 
 
 module SPI ( 	input logic [8:0] Data,
 				input logic clk_SPI, i_SPI_valid, i_RAM_ready,
-				output logic o_SPI_ready, o_RAM_valid, Mode, clk_RAM,
-				output logic [7:0] Data_RAM); 
+				output logic o_SPI_ready, o_RAM_valid, Mode,
+				output logic [15:0] Data_RAM); 
 				
-	logic [8:0] Buffer [7:0];							
+	parameter PTR_Write_max = 159;
+	parameter PTR_Read_max = 159;
+	
+	reg [16:0] Buffer [159:0];	
+	
+	reg [8:0] BitConvert [1:0]';
+	wire Count;
 									// Mini Buffer for 
 	reg PTR_Read, PTR_Write, Overflow;	
 									// Pointers to the Temporary Buffer
@@ -18,39 +24,52 @@ module SPI ( 	input logic [8:0] Data,
 		PTR_Read <= '0;
 		PTR_Write <= '0;
 		Overflow <= '0;
-	end
-	
-	
-	parameter PTR_Write_max = 319;
-	parameter PTR_Read_max = 319;
-	
+		Count <= '1;
+	end	
+
 	always @(posedge clk_SPI) begin	// On Positive Clock Edge
 			
 		if(i_SPI_valid && o_SPI_ready) begin 		// If input data is valid 
-			Buffer[PTR_Write] <= Data;				// And Buffer is ready
+													// And Buffer is ready
+			if(Data[8] == '1) begin					// If Mode bit 
+				BitConvert[1][8] <= '1;
+				BitConvert[1][7:0] <= Data[7:0];
+				BitConvert[0][8:0] <= 9'b000000000;
+				Count <= 1;
+			end
+			else begin
+				BitConvert[1][8] <= '0;
+				BitConvert[Count][7:0] <= Data[7:0];
+				if(Count)
+					Count <= '0;
+				else	
+					Count <= '1;
+			end				
+		
+			if(!Count || Data[8] == '1)begin	
+				Buffer[PTR_Write] <= {BitConvert[1], BitConvert[0][7:0]};			
 													// Move Data to Buffer						
 		 
-			if (PTR_Write == PTR_Write_max)			// This increments the
-				assign PTR_Write = '0;				// Write pointer
-			else
-				assign PTR_Write = PTR_Write + '1;
+				if (PTR_Write == PTR_Write_max)			// This increments the
+					assign PTR_Write = '0;				// Write pointer
+				else
+					assign PTR_Write = PTR_Write + '1;
 				
-			if ((PTR_Write + 1'b1 == PTR_Read) || ((PTR_Write == 8'hFF) && (PTR_Read == 8'h00)))
+				if ((PTR_Write + 1'b1 == PTR_Read) || ((PTR_Write == 8'hFF) && (PTR_Read == 8'h00)))
 													// If Buffer is Full
-				assign Overflow = '1;				// Indicate Buffer is Full
-			else 
-				assign Overflow = '0;								
-							
+					assign Overflow = '1;				// Indicate Buffer is Full
+				else 
+					assign Overflow = '0;								
+			end				
 		end
 	end
-	
 	
 	
 					
 	always @(*)  begin
 	
-	assign Mode = Buffer[PTR_Read][8];
-	assign Data_RAM = Buffer[PTR_Read][7:0];
+	assign Mode = Buffer[PTR_Read][16];
+	assign Data_RAM = Buffer[PTR_Read][15:0];
 	
 		if (PTR_Write == PTR_Read) begin
 		
