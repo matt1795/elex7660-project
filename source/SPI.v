@@ -1,6 +1,6 @@
 // This Module Takes 8 bit input from SPI Signal and stores the data on temporary buffer
 // Called Buffer. It will then send 16 bit data to the RAM.
-// By William Harkness and Mathew Knight
+// By William Harkness
 
 
 
@@ -12,13 +12,13 @@ module SPI ( 	input logic [8:0] Data,
 	parameter PTR_Write_max = 159;
 	parameter PTR_Read_max = 159;
 	
-	reg [16:0] Buffer [159:0];	
-	
-	reg [8:0] BitConvert [1:0]';
-	wire Count;
-									// Mini Buffer for 
+	reg [16:0] Buffer [159:0];			// 320 pixal = one line
+							
+	reg [8:0] BitConvert [1:0]';			// For coverting the 8 bit input
+	wire Count;					// To 16 bit buffer
+							
 	reg PTR_Read, PTR_Write, Overflow;	
-									// Pointers to the Temporary Buffer
+							// Pointers to the Temporary Buffer
 	
 	initial begin
 		PTR_Read <= '0;
