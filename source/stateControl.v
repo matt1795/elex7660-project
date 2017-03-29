@@ -40,13 +40,12 @@ module stateControl(
     // Line buffer
     blockfifo #(320, 8) lineBuffer(
 	.clk(clk),
-	.reset(i),
-	.write(),
-	.next(),
-	.ready(),
-	.data_i(),
-	.data_o()
-	.readPtr(),
+	.reset(reset),
+	.write(write),
+	.ready(ready),
+	.data_i(data_i),
+	.data_o(colourNum)
+	.readPtr(pixel)
     );
 
     // State variables
