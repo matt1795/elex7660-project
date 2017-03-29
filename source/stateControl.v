@@ -8,8 +8,15 @@
 
 `include "../source/colourDecoder.v"
 
+// State defines
+`define VBLANK 0
+`define HLINE 1
+`define VIDEO 2
+
 module stateControl(
-    input clk, reset,
+    input clk, reset, write,
+    input [7:0] data_i,
+    output ready
     output reg [7:0] dac
 );
 
@@ -22,16 +29,38 @@ module stateControl(
     reg [9:0] pixel, line;
     reg [11:0] count;
      
+    // Colour Decoder Module
+    colourDecoder c_0(
+	.clk(clk), 
+	.reset(reset | colourReset),
+	.colourNum(colourNum), 
+	.video(video)
+    );
 
-    colourDecoder c_0(.clk(clk), .reset(reset | colourReset),
-	.colourNum(colourNum), .video(video));
+    // Line buffer
+    blockfifo #(320, 8) lineBuffer(
+	.clk(clk),
+	.reset(i),
+	.write(),
+	.next(),
+	.ready(),
+	.data_i(),
+	.data_o()
+	.readPtr(),
+    );
+
+    // State variables
+    reg [2:0] state;
+    reg [7:0] line;
+    reg [8:0] pixel;
 
     always @(*) begin
-
+	
 	// The timings for a single line
 	if (count < 75) begin
 	    dac = blank;
 	    colourReset = 'b1;
+	    pixel = 'b0;
 	end
 	else if (count < 12'd310)
 	    dac = Hsync;
@@ -51,13 +80,16 @@ module stateControl(
 	    dac = 8'hFF;
     end
 
-    always @(posedge clk) begin
+    always @(posedge clk or posedge reset) begin
 	if (reset) begin
 	    count <= 1'b0;
-	    colourReset = 'b0;
+	    colourReset <= 'b0;
+	    state <= VSYNC;
+	    line <= 'b0;
+	    pixel <= 'b0;
 	end
 	else if (count >= 12'd3175)
-	    count <= 1'b0;
+	    count <= 'b0;
 	else
 	    count <= count + 1'b1;
     end
