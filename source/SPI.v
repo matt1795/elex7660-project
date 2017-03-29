@@ -1,22 +1,24 @@
 // This Module Takes 8 bit input from SPI Signal and stores the data on temporary buffer
 // Called Buffer. It will then send 16 bit data to the RAM.
-// By William Harkness and Mathew Knight
+// By William Harkness
 
 
 
-module SPI ( 	input logic [8:0] Data,
-				input logic clk_SPI, i_SPI_valid, i_RAM_ready,
-				output logic o_SPI_ready, o_RAM_valid, Mode,
-				output logic [15:0] Data_RAM); 
+module SPI ( 	input wire [8:0] Data,
+				input wire clk_SPI, i_SPI_valid, i_RAM_ready, CLK,
+				output reg o_SPI_ready, o_RAM_valid, Mode,
+				output reg [15:0] Data_RAM); 
 				
 	parameter PTR_Write_max = 159;
 	parameter PTR_Read_max = 159;
 	
-	reg [16:0] Buffer [159:0];	
-	
-	reg [8:0] BitConvert [1:0]';
-	wire Count;
-									// Mini Buffer for 
+	reg [16:0] Buffer [159:0];		// 320 pixal = one line
+							
+	reg [8:0] BitConvert [1:0];		// For coverting the 8 bit input
+	reg Count;						// To 16 bit buffer
+			
+	//wire CLK;						// Should be CLK 50 MHz
+
 	reg PTR_Read, PTR_Write, Overflow;	
 									// Pointers to the Temporary Buffer
 	
@@ -27,7 +29,7 @@ module SPI ( 	input logic [8:0] Data,
 		Count <= '1;
 	end	
 
-	always @(posedge clk_SPI) begin	// On Positive Clock Edge
+	always @(posedge clk_SPI) begin		
 			
 		if(i_SPI_valid && o_SPI_ready) begin 		// If input data is valid 
 													// And Buffer is ready
@@ -50,14 +52,14 @@ module SPI ( 	input logic [8:0] Data,
 				Buffer[PTR_Write] <= {BitConvert[1], BitConvert[0][7:0]};			
 													// Move Data to Buffer						
 		 
-				if (PTR_Write == PTR_Write_max)			// This increments the
-					assign PTR_Write = '0;				// Write pointer
+				if (PTR_Write == PTR_Write_max)		// This increments the
+					assign PTR_Write = '0;			// Write pointer
 				else
 					assign PTR_Write = PTR_Write + '1;
 				
 				if ((PTR_Write + 1'b1 == PTR_Read) || ((PTR_Write == 8'hFF) && (PTR_Read == 8'h00)))
 													// If Buffer is Full
-					assign Overflow = '1;				// Indicate Buffer is Full
+					assign Overflow = '1;			// Indicate Buffer is Full
 				else 
 					assign Overflow = '0;								
 			end				
@@ -68,34 +70,36 @@ module SPI ( 	input logic [8:0] Data,
 					
 	always @(*)  begin
 	
-	assign Mode = Buffer[PTR_Read][16];
-	assign Data_RAM = Buffer[PTR_Read][15:0];
+	//CLK <= CLOCK_50;
+
+	Mode <= Buffer[PTR_Read][16];
+	Data_RAM <= Buffer[PTR_Read][15:0];
 	
 		if (PTR_Write == PTR_Read) begin
 		
 			if (Overflow) begin					// If Full Buffer 
-				assign o_SPI_ready = '0;		// Buffer can't be written to
-				assign o_RAM_valid = '1;		// Output from Buffer is valid
+				o_SPI_ready <= '0;		// Buffer can't be written to
+				o_RAM_valid <= '1;		// Output from Buffer is valid
 			end
 			
 			else begin
-				assign o_SPI_ready = '1;		// Buffer can be written to
-				assign o_RAM_valid = '0;		// Output isn't valid
+				o_SPI_ready <= '1;		// Buffer can be written to
+				o_RAM_valid <= '0;		// Output isn't valid
 			end
 		end
 		
 		else  begin
-			assign o_SPI_ready = '1;			// Buffer Can be written to
-			assign o_RAM_valid = '1;			// And read from
+			o_SPI_ready <= '1;			// Buffer Can be written to
+			o_RAM_valid <= '1;			// And read from
 		end
 	end
 	
-	always @(posedge CLOCK_50) begin			// On Positive Clock Edge
+	always @(posedge CLK) begin			// On Positive Clock Edge
 	
-		if(i_RAM_ready && o_RAM_valid) begin 		// If input data is valid 
+		if(i_RAM_ready && o_RAM_valid) begin 	// If input data is valid 
 
-			if (PTR_Read == PTR_Read_max)			// This increments the
-				assign PTR_Read = '0;				// Read pointer
+			if (PTR_Read == PTR_Read_max)		// This increments the
+				assign PTR_Read = '0;			// Read pointer
 			else
 				assign PTR_Read = PTR_Read + '1;
 		end
