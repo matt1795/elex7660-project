@@ -9,17 +9,17 @@ module SPI ( 	input wire [8:0] Data,
 				output reg o_SPI_ready, o_RAM_valid, Mode,
 				output reg [15:0] Data_RAM); 
 				
-	parameter PTR_Write_max = 159;
-	parameter PTR_Read_max = 159;
+	parameter PTR_max = 159;
 	
-	reg [16:0] Buffer [159:0];		// 320 pixal = one line
+	reg [16:0] Buffer [PTR_max:0];		// 320 pixal = one line
 							
-	reg [8:0] BitConvert [1:0];		// For coverting the 8 bit input
+	reg [8:0] BitConvert;		// For coverting the 8 bit input
 	reg Count;						// To 16 bit buffer
 			
 	//wire CLK;						// Should be CLK 50 MHz
 
-	reg PTR_Read, PTR_Write, Overflow;	
+	reg [7:0] PTR_Read, PTR_Write;
+	reg Overflow, Mode_Flag;	
 									// Pointers to the Temporary Buffer
 	
 	initial begin
@@ -32,32 +32,28 @@ module SPI ( 	input wire [8:0] Data,
 	always @(posedge clk_SPI) begin		
 			
 		if(i_SPI_valid && o_SPI_ready) begin 		// If input data is valid 
-													// And Buffer is ready
-			if(Data[8] == '1) begin					// If Mode bit 
-				BitConvert[1][8] <= '1;
-				BitConvert[1][7:0] <= Data[7:0];
-				BitConvert[0][8:0] <= 9'b000000000;
-				Count <= 1;
+													// And Buffer is ready	
+			if (Count)	begin																		
+				BitConvert <= Data;
+				Count <= '0;
 			end
-			else begin
-				BitConvert[1][8] <= '0;
-				BitConvert[Count][7:0] <= Data[7:0];
-				if(Count)
-					Count <= '0;
-				else	
-					Count <= '1;
-			end				
 		
-			if(!Count || Data[8] == '1)begin	
-				Buffer[PTR_Write] <= {BitConvert[1], BitConvert[0][7:0]};			
+					
+				
+				
+			if(!Count)begin	
+				
+				Count <= '1;
+
+				Buffer[PTR_Write] <= {BitConvert, Data[7:0]};//BitConvert[0][7:0]};			
 													// Move Data to Buffer						
 		 
-				if (PTR_Write == PTR_Write_max)		// This increments the
-					assign PTR_Write = '0;			// Write pointer
+				if (PTR_Write == PTR_max)		// This increments the
+					PTR_Write <= '0;			// Write pointer
 				else
-					assign PTR_Write = PTR_Write + '1;
+					PTR_Write <= PTR_Write + 8'd1;
 				
-				if ((PTR_Write + 1'b1 == PTR_Read) || ((PTR_Write == 8'hFF) && (PTR_Read == 8'h00)))
+				if ((PTR_Write + 4'd1 == PTR_Read) || ((PTR_Write == PTR_max) && (PTR_Read == 8'd0)))
 													// If Buffer is Full
 					assign Overflow = '1;			// Indicate Buffer is Full
 				else 
@@ -98,10 +94,10 @@ module SPI ( 	input wire [8:0] Data,
 	
 		if(i_RAM_ready && o_RAM_valid) begin 	// If input data is valid 
 
-			if (PTR_Read == PTR_Read_max)		// This increments the
+			if (PTR_Read == PTR_max)		// This increments the
 				assign PTR_Read = '0;			// Read pointer
 			else
-				assign PTR_Read = PTR_Read + '1;
+				assign PTR_Read = PTR_Read + 8'd1;
 		end
 	end
 		
