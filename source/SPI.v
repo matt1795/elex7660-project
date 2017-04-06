@@ -36,10 +36,7 @@ module SPI ( 	input wire [8:0] Data,
 			if (Count)	begin																		
 				BitConvert <= Data;
 				Count <= '0;
-			end
-		
-					
-				
+			end			
 				
 			if(!Count)begin	
 				
