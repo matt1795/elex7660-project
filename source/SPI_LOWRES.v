@@ -7,7 +7,7 @@ module SPI ( 	input wire [8:0] Data,
 				input wire [7:0] Row_Select,
 				input wire clk_SPI, Next_Line, CLK, reset,
 				output reg Data_Valid,
-				output reg [7:0] Data_Frame); 
+				output reg [7:0] Data_O); 
 				
 	parameter PTR_Max_Row =  119;
 	parameter PTR_Max_Col =  159;
@@ -27,7 +27,7 @@ module SPI ( 	input wire [8:0] Data,
 		PTR_Read_Col <= 8'd0;
 		PTR_Write_Col <= 8'd0;
 		PTR_Write_Row <= 8'd0;
-		Data_Frame <= 8'd0;
+		Data_O <= 8'd0;
 		Data_next <= 8'd0;
 		Full = 1'b0;
 		Line_Flag = 1'b0;
@@ -38,13 +38,32 @@ module SPI ( 	input wire [8:0] Data,
 	
 	always @(posedge clk_SPI_next) begin			
 		
-		Buffer[PTR_Write_Row][PTR_Write_Col] <= Data_next[7:0];			
+		Buffer[PTR_Write_Row][PTR_Write_Col] <= Data_next[7:0];	
+		Buffer[PTR_Write_Row + 8'd1][PTR_Write_Col] <= Data_next[7:0];
+		Buffer[PTR_Write_Row + 8'd2][PTR_Write_Col] <= Data_next[7:0];
+		Buffer[PTR_Write_Row + 8'd3][PTR_Write_Col] <= Data_next[7:0];
+		
+		Buffer[PTR_Write_Row][PTR_Write_Col + 8'd1] <= Data_next[7:0];	
+		Buffer[PTR_Write_Row + 8'd1][PTR_Write_Col + 8'd1] <= Data_next[7:0];
+		Buffer[PTR_Write_Row + 8'd2][PTR_Write_Col + 8'd1] <= Data_next[7:0];
+		Buffer[PTR_Write_Row + 8'd3][PTR_Write_Col + 8'd1] <= Data_next[7:0];
+		
+		Buffer[PTR_Write_Row][PTR_Write_Col  + 8'd2] <= Data_next[7:0];	
+		Buffer[PTR_Write_Row + 8'd1][PTR_Write_Col + 8'd2] <= Data_next[7:0];
+		Buffer[PTR_Write_Row + 8'd2][PTR_Write_Col + 8'd2] <= Data_next[7:0];
+		Buffer[PTR_Write_Row + 8'd3][PTR_Write_Col + 8'd2] <= Data_next[7:0];
+		
+		Buffer[PTR_Write_Row][PTR_Write_Col + 8'd3] <= Data_next[7:0];	
+		Buffer[PTR_Write_Row + 8'd1][PTR_Write_Col + 8'd3] <= Data_next[7:0];
+		Buffer[PTR_Write_Row + 8'd2][PTR_Write_Col + 8'd3] <= Data_next[7:0];
+		Buffer[PTR_Write_Row + 8'd3][PTR_Write_Col + 8'd3] <= Data_next[7:0];
+		
 															// Move Data to Buffer	
 													
-		if (((PTR_Write_Col == PTR_Max_Col) && (PTR_Write_Row == PTR_Max_Row)) && ~Data_next[8]);
+		if (((PTR_Write_Col == PTR_Max_Col - 8'd3 ) && (PTR_Write_Row == PTR_Max_Row - 8'd3)) && ~Data_next[8]);
 		
 		
-		else if ((PTR_Write_Col == PTR_Max_Col) || Data_next[8]) begin	
+		else if ((PTR_Write_Col == PTR_Max_Col - 8'd3) || Data_next[8]) begin	
 															// This increments the
 				
 			PTR_Write_Col = 8'd0;							// Write pointer
@@ -52,15 +71,15 @@ module SPI ( 	input wire [8:0] Data,
 			if (Data_next[8])								
 				PTR_Write_Row = 8'd0;						
 				
-			else if (PTR_Write_Row == PTR_Max_Row)
-				PTR_Write_Row = PTR_Max_Row;
+			else if (PTR_Write_Row == PTR_Max_Row - 8'd3)
+				PTR_Write_Row = PTR_Max_Row - 8'd3;
 			
 			else
-				PTR_Write_Row = PTR_Write_Row + 8'd1;
+				PTR_Write_Row = PTR_Write_Row + 8'd4;
 					
 		end
 		else
-			PTR_Write_Col = PTR_Write_Col + 8'd1;							
+			PTR_Write_Col = PTR_Write_Col + 8'd4;							
 						
 	end
 	
@@ -68,14 +87,14 @@ module SPI ( 	input wire [8:0] Data,
 					
 	always @(*)  begin
 	
-		if ((PTR_Write_Col == PTR_Max_Col) && (PTR_Write_Row == PTR_Max_Row))
+		if ((PTR_Write_Col == PTR_Max_Col - 8'd3) && (PTR_Write_Row == PTR_Max_Row - 8'd3))
 			Full = '1;
 		
 		if(Full) 
-			Data_Frame <= Buffer[Row_Select[7:1]] [PTR_Read_Col];
+			Data_O <= Buffer[Row_Select[7:1]] [PTR_Read_Col];
 		
 		else
-			Data_Frame <= 8'd0;
+			Data_O <= 8'd0;
 		
 	end
 	
