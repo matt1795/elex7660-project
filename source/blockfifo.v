@@ -21,7 +21,7 @@ module blockfifo #(
 );
 
     parameter addrWid = $clog2(len);
-    reg [(addrWid-1):0] writePtr;
+    reg [(addrWid-1):0] writePtr = '0;
 
     reg [(wid-1):0] ram [0:(len-1)];
 
@@ -42,7 +42,7 @@ module blockfifo #(
     end
 
     // Sequential logic
-    always @(posedge clk or posedge reset) begin
+    always @(posedge clk) begin
 	if (reset)
 	    writePtr <= 'b0;
 	else begin
