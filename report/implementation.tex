@@ -7,6 +7,44 @@
 
 \subsection{8-bit DAC Hardware}
 
+A relatively high quality DAC is required in order to synthesize composite
+video. AD9748 was selected as it had a fast rise and fall time, parallel input,
+and up to 210 MSPS. The only challenge was that no breakout boards existed for
+this IC, so a general breakout board was ordered for the QFN-32 package, and
+with some help from Ed Casas we managed to reflow solder the IC successfully:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.1]{surfaceMount.jpg}
+    \caption{Surface Mounted DAC IC}
+\end{figure}
+
+As this DAC was going to be operated at 50 MSPS, the clock was put in
+differential mode, and a shielded twisted pair was used as the connection
+between the FPGA and the DAC board. This was to reduce any possible noise.
+additionally the analog power was given a separate regulator that recieved
+power from the external dual power supply. The clock and digital power was taken
+from the FPGA.
+
+The dual supply is also used to power the video amplifier. This takes the
+differential current output of the DAC and converts it into the appropriate
+range for composite video (-1V to 1V). The output of the amplifier is connected
+to an RCA jack so that it can be easily connected to standard televisions.
+Standard value resistors were used for the video amplifier while a potentiometer
+was used to adjust the full scale range of the current output of the DAC.
+
+In application we would not be using an external dual power supply but a switching
+regulator. This keeps the package size down while only requiring a single power
+supply. Additionally the switching power supply would provide some noise
+immunity from harmonics created by the 50 MHz clock.
+
+The circuit diagram for the prototype board is found in the appendix.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.1]{protoBoard.jpg}
+    \caption{}
+\end{figure}
 
 \subsection{Composite Driver}
 
