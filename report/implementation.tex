@@ -75,4 +75,13 @@ needed to use NIOS 2 software to give us a file to be able to access the
 SDRAM. Once this Verilog file would be created we would have to modify it to
 fit our needs and properly implement it in our system.
 
+The SDRAM was needed for our project to reach its max potential because the FPGA
+could not store enough data alone for a full frame. This is because we needed 
+the FPGA to store 640x480 8-bit pixels. At first, we tried to quarter the 
+resolution, 320x240, but this still required the use of the SDRAM. When we 
+figured we didn’t have enough time to complete the SDRAM module, we lowered the 
+resolution again to 160x120. With this resolution, we were finally able to be 
+stored an entire frame on the FPGA without using the SDRAM. We stored the data 
+on the FPGA in the form if a 160x120 matrix with elements of 8-bit pixels.
+
 
