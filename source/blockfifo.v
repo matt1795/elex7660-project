@@ -8,8 +8,9 @@
 // empty when it is reset.
 
 module blockfifo #(
-    parameter len = 8,
-    parameter wid = 8
+    parameter len = 320,
+    parameter wid = 8,
+parameter addrWid = 9
 )
 (
     input clk, reset, write, 
@@ -20,8 +21,7 @@ module blockfifo #(
     output reg [(wid-1):0] data_o
 );
 
-    parameter addrWid = $clog2(len);
-    reg [(addrWid-1):0] writePtr = '0;
+    reg [(addrWid-1):0] writePtr;
 
     reg [(wid-1):0] ram [0:(len-1)];
 
