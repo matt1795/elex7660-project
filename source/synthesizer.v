@@ -19,27 +19,59 @@ module synthesizer(
     wire [7:0] ireg2;
 
     // Look-up Tables/ROM
-    lut #(64, 8, "../source/data/phase.data")
-	colourPhase(.clk(clk), .reset(reset), .addr(colourNum), .data(phaOff));
+    lut #(64, 8, "../source/data/phase.data") colourPhase(
+	.clk(clk), 
+	.reset(reset), 
+	.addr(colourNum), 
+	.data(phaOff)
+    );
     
-    lut #(64, 8, "../source/data/amplitude.data")
-	colourAmplitude(.clk(clk), .reset(reset), .addr(colourNum), .data(amp));
+    lut #(64, 8, "../source/data/amplitude.data") colourAmplitude(
+	.clk(clk), 
+	.reset(reset), 
+	.addr(colourNum), 
+	.data(amp)
+    );
     
-    lut #(64, 8, "../source/data/offset.data")
-	colourOffset(.clk(clk), .reset(reset), .addr(colourNum), .data(offset));
+    lut #(64, 8, "../source/data/offset.data") colourOffset(
+	.clk(clk), 
+	.reset(reset), 
+	.addr(colourNum), 
+	.data(offset)
+    );
     
-    lut #(256, 8, "../source/data/sine.data")
-	lutSine(.clk(clk), .reset(reset), .addr(phase1 + phaOff), .data(sine));
+    lut #(256, 8, "../source/data/sine.data") lutSine(
+	.clk(clk), 
+	.reset(reset), 
+	.addr(phase1 + phaOff), 
+	.data(sine)
+    );
 
     // Time delays (simple D Flip-flops)
-    delay d_0(.clk(clk), .reset(reset), .D(phase), .Q(phase1));
-    delay d_1(.clk(clk), .reset(reset), .D(offset), .Q(offset1));
-    delay d_2(.clk(clk), .reset(reset), .D(amp), .Q(amp1));
+    delay d_0(
+	.clk(clk), 
+	.reset(reset), 
+	.D(phase), 
+	.Q(phase1)
+    );
+    
+    delay d_1(
+	.clk(clk), 
+	.reset(reset), 
+	.D(offset), 
+	.Q(offset1)
+    );
+    
+    delay d_2(
+	.clk(clk), 
+	.reset(reset), 
+	.D(amp), 
+	.Q(amp1)
+    );
 
     // Put the components together 
     assign ireg2 = ireg >> 7;
     assign ireg = amp1*sine;
-    
     assign video = ireg2 + offset1;
 
 endmodule
