@@ -21,10 +21,20 @@ module colourDecoder(
     // Frequency control word for a 3579545 Hz output and a 50Mhz clock
     reg [23:0] fcw = 24'd1201096;
 
-    nco #(24) osc(.clk(clk), .reset(reset), .fcw(fcw), .out(phase));
+    // Instantiation of NCO
+    nco #(24) osc(
+	.clk(clk), 
+	.reset(reset),
+	.fcw(fcw), .out(phase)
+    );
 
-    synthesizer s_0(.clk(clk), .reset(reset), .colourNum(colourNum),
-    .phase(phase), .video(video));
-
+    // Instantiation of colour synthesizer
+    synthesizer s_0(
+	.clk(clk), 
+	.reset(reset), 
+	.colourNum(colourNum),
+	.phase(phase), 
+	.video(video)
+    );
 
 endmodule
