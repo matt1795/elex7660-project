@@ -23,5 +23,13 @@ palette could be improved so that 256 colour could be implemented as there was
 room in the colour encoding word size, Only the look up tables would need to be
 regenerated. 
 
-Also, later in the project it became clear that it would be advantageous for the
-composite video driver to 
+Also, later in the project it became clear that it would be advantageous for 
+the composite video driver to use SDRAM. This is because then we wouldn't be 
+limited by resolution. This could have been implemented using NIOS 2. If we 
+used the SDRAM we could also have the devices store multiple images at once.
+This could be used to upload a few images to the devices then disconnecting
+the source. or creating simple animation. 
+
+Since VGA uses the same resolution as component video, we could easily implement
+a VGA interface that can communicate with more modern displays.
+
