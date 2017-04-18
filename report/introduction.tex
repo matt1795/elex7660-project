@@ -1,12 +1,37 @@
 \section{Introduction}
 
-In the simplest of terms, our project is making video driver for composite
-video. But what differentiates us from other video drivers is that we plan on 
-implementing a majority hardware solution. When this project was first 
-brought up, we knew whatever project we choice had to meet our own personal
-requirements. It had to be challenging, useful, and have a hardware and 
-software component. Although this already exists in the market they can be over
-priced. We plan on trying to make the same product for cheaper. Not only would
-solution be cheaper, it could potentially run faster because a hardware solution
-can run faster than a software solution could.
+\subsection{Letter from Matt Knight}
+
+At a party a couple years ago, a friend who worked in film approached me and
+told me about a niche market in film that required the syncing of frame rates of
+monitors to shutter rates of cameras. One of the most less controllable of
+monitors were CRT televisions as their frame rate could not be changed, unlike
+many digital monitors. While there were old converter devices that handled this,
+these were made by "weird dudes in their basements"i. These induviduals would
+now charge large sums of money for new devices as they did not want to make any
+more.
+
+This conversation got me researching composite video signals and the NTSC
+standard. This research changed my goal to generating composite video digitally.
+The idea was that one could use an old analog television as a simple display for
+whatever project they chose. I first attempted to generate my own video source
+from a microcontroller, however I easily ran out of processing power for a black
+and white pixel display, let alone something with greyscale output or even
+colour.
+
+And instead of turning to a bigger, faster processor, it made sense to move
+towards a hardware solution, and that is where FPGA's come in.
+
+- Matt Knight
+
+\subsection{Composite Video Driver for ELEX 7660}
+
+This project is a video card that takes a 9-bit parallel interface to transfer
+video data, and outputs the analog signal required for composite video. The
+purpose of this device is to provide an easy to use, and efficient method to
+display an image or video on a CRT television. There is little practicality in
+this project since it is based on such an old technology, it was chosen more for
+a challenging goal that suited the premise for using FPGA's: software is not
+fast enough.
+
 
