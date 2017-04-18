@@ -15,6 +15,7 @@ If we were to change anything about our project we would have wanted to implemen
 the SDRAM because then we wouldn't be limited by resolution. This would also
 let us easily expand our project to other video outputs.
 
+\newpage
 
 \subsection{Future Directions}
 
@@ -24,4 +25,9 @@ room in the colour encoding word size, Only the look up tables would need to be
 regenerated. 
 
 Also, later in the project it became clear that it would be advantageous for the
-composite video driver to 
+composite video driver to use some sort of communcation bus for use with a
+processor core. Using the Nios II would expand the capabilities of the system so
+that it could multitask while dealing with the data coming into the module.
+
+Additionally the resolution could be increased to the standard 480x640 pixels,
+this would require a faster and still reliable clock.
