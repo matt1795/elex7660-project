@@ -15,6 +15,7 @@ If we were to change anything about our project we would have wanted to implemen
 the SDRAM because then we wouldn't be limited by resolution. This would also
 let us easily expand our project to other video outputs.
 
+\newpage
 
 \subsection{Future Directions}
 
@@ -23,13 +24,19 @@ palette could be improved so that 256 colour could be implemented as there was
 room in the colour encoding word size, Only the look up tables would need to be
 regenerated. 
 
-Also, later in the project it became clear that it would be advantageous for 
-the composite video driver to use SDRAM. This is because then we wouldn't be 
-limited by resolution. This could have been implemented using NIOS 2. If we 
-used the SDRAM we could also have the devices store multiple images at once.
-This could be used to upload a few images to the devices then disconnecting
-the source. or creating simple animation. 
+Also, later in the project it became clear that it would be advantageous for the
+composite video driver to use some sort of communication bus for use with a
+processor core. Using the NIOS II would expand the capabilities of the system so
+that it could multitask while dealing with the data coming into the module.
 
-Since VGA uses the same resolution as component video, we could easily implement
+Additionally, the resolution could be increased to the standard 480x640 pixels,
+this would require a faster and still reliable clock.
+
+If we used NIOS II we could have also implemented the SDRAM. This would give us
+the ability to store an 640x480 image and possible multiple images. This could 
+be used to upload a few images to the devices then disconnecting the source or 
+for creating simple animations. 
+
+Lastly, since VGA uses the same resolution as component video, we could easily implement
 a VGA interface that can communicate with more modern displays.
 

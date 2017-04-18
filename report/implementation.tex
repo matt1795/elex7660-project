@@ -1,10 +1,5 @@
 \section{Implementation}
 
-\begin{figure}[H]
-    \centering
-    \caption{Module Diagram}
-\end{figure}
-
 \subsection{8-bit DAC Hardware}
 
 A relatively high quality DAC is required in order to synthesize composite
@@ -38,21 +33,59 @@ regulator. This keeps the package size down while only requiring a single power
 supply. Additionally the switching power supply would provide some noise
 immunity from harmonics created by the 50 MHz clock.
 
-The circuit diagram for the prototype board is found in the appendix.
-
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.1]{protoBoard.jpg}
-    \caption{}
+    \caption{Prototype DAC Board}
 \end{figure}
 
 \subsection{Composite Driver}
 
 \subsubsection{Timing Control}
 
-\subsubsection{Line Buffer}
+The challenge with generating composite video is that it is a real-time signal.
+Timing of specific synchronizations is important to create an undistorted image.
+The timer module controls these timings using a lookup table, a counter, and
+some pointers.
+
+Once a vertical blanking signal is needed, the timer is reset to the beginning.
+The basic workings of the timer module is that is will have a specific point in
+the table, or state. Every clock cycle the counter increments, and once the
+counter reaches the value for the next entry in the table, the state increments.
+For each entry in the table, there is the count value and the DAC value. 
+
+For the vertical blanking state, the DAC output value will be the Hsync and
+Blanking levels which get sent straight to the DAC. When in the horizontal line
+state, some of the outputs are Hsync and blanking, however there is the active
+video state which switches the DAC output to be driven by the line buffer.
+Additional to the clock counter is a pixel counter which increments every 8
+clocks so that each pixel in a line is timed perfectly and correct pixel can be
+extracted from the line buffer.
+
+\subsubsection{Line Buffer/Block FIFO}
+
+In order to deal with different rates of writing to the DAC and incoming video
+data, a buffer that contains all the pixel information for one line was
+instantiated in the video generator. A "block" FIFO was used for this buffer.
+The idea behind this type of FIFO is that once it is full, it will not accept
+any more data until it is reset. Upon a reset, the old data is still available
+to the read side until it is overwritten. The video generator would also tell
+the SPI module which line it wanted, and so the buffer would get a burst of
+writes that would be the line that the video generator was requesting.
 
 \subsubsection{Colour Modulation}
+
+The colour modulation, which did not get to be tested used lookup tables to
+decode the colour numbers. A numerically controlled oscillator generated the
+phase-time signal for the 3.58 MHz carrier. Phase modulation was done at this
+stage since one only needed the addition operator in order to modulate this
+signal. Then the phase went into an 8-bit sine lookup table. This was done in
+two's compliment so that the dc offset was referenced to the middle of the sine
+wave and not the crest. This made generating the lookup tables far simpler. The
+sine wave was then amplitude modulated by a value that was assertained from the
+colour number using another lookup table. Finally the dc value representing
+luminosity was added to the sine wave and the signal was sent to the DAC to be
+converted.
 
 \subsection{SPI Module}
 
@@ -66,7 +99,6 @@ Once the SPI module obtained an input, the module would stack two input pixels
 and store the input on an array 320 elements long. Each element on the array 
 would store 16-bits or two pixels. This make for easy conversion to the SDRAM.
 The SDRAM stores 16 bits worth of data at a time.
-
 
 \subsection{RAM Interface}
 
@@ -83,5 +115,3 @@ figured we didn’t have enough time to complete the SDRAM module, we lowered th
 resolution again to 160x120. With this resolution, we were finally able to be 
 stored an entire frame on the FPGA without using the SDRAM. We stored the data 
 on the FPGA in the form if a 160x120 matrix with elements of 8-bit pixels.
-
-
